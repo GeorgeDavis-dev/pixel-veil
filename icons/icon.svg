@@ -1,0 +1,56 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" width="512" height="512" role="img" aria-label="Pixel Veil">
+  <!--
+    Pixel Veil mark: a dark rounded tile holding a 6 x 6 mosaic in the shape of a head,
+    with one bright row across the eyes (the veil).
+
+    tools/make-icons.mjs reads this file to draw the PNG icons, so keep it simple:
+    only <rect> elements with x, y, width, height, rx and a hex fill. The rect with
+    id="tile" is the background. Every other rect is part of the mark.
+    Grid: 52 px blocks on a 60 px pitch, starting at 80.
+  -->
+  <rect id="tile" x="0" y="0" width="512" height="512" rx="112" fill="#101216"/>
+
+  <!-- row 1 -->
+  <rect x="140" y="80" width="52" height="52" rx="8" fill="#14695b"/>
+  <rect x="200" y="80" width="52" height="52" rx="8" fill="#1f9c86"/>
+  <rect x="260" y="80" width="52" height="52" rx="8" fill="#37d9b8"/>
+  <rect x="320" y="80" width="52" height="52" rx="8" fill="#14695b"/>
+
+  <!-- row 2 -->
+  <rect x="80" y="140" width="52" height="52" rx="8" fill="#14695b"/>
+  <rect x="140" y="140" width="52" height="52" rx="8" fill="#1f9c86"/>
+  <rect x="200" y="140" width="52" height="52" rx="8" fill="#37d9b8"/>
+  <rect x="260" y="140" width="52" height="52" rx="8" fill="#1f9c86"/>
+  <rect x="320" y="140" width="52" height="52" rx="8" fill="#37d9b8"/>
+  <rect x="380" y="140" width="52" height="52" rx="8" fill="#14695b"/>
+
+  <!-- row 3: the veil -->
+  <rect x="80" y="200" width="52" height="52" rx="8" fill="#a4f7e4"/>
+  <rect x="140" y="200" width="52" height="52" rx="8" fill="#6beacf"/>
+  <rect x="200" y="200" width="52" height="52" rx="8" fill="#a4f7e4"/>
+  <rect x="260" y="200" width="52" height="52" rx="8" fill="#a4f7e4"/>
+  <rect x="320" y="200" width="52" height="52" rx="8" fill="#6beacf"/>
+  <rect x="380" y="200" width="52" height="52" rx="8" fill="#a4f7e4"/>
+
+  <!-- row 4 -->
+  <rect x="80" y="260" width="52" height="52" rx="8" fill="#1f9c86"/>
+  <rect x="140" y="260" width="52" height="52" rx="8" fill="#37d9b8"/>
+  <rect x="200" y="260" width="52" height="52" rx="8" fill="#1f9c86"/>
+  <rect x="260" y="260" width="52" height="52" rx="8" fill="#37d9b8"/>
+  <rect x="320" y="260" width="52" height="52" rx="8" fill="#1f9c86"/>
+  <rect x="380" y="260" width="52" height="52" rx="8" fill="#14695b"/>
+
+  <!-- row 5 -->
+  <rect x="80" y="320" width="52" height="52" rx="8" fill="#14695b"/>
+  <rect x="140" y="320" width="52" height="52" rx="8" fill="#1f9c86"/>
+  <rect x="200" y="320" width="52" height="52" rx="8" fill="#37d9b8"/>
+  <rect x="260" y="320" width="52" height="52" rx="8" fill="#1f9c86"/>
+  <rect x="320" y="320" width="52" height="52" rx="8" fill="#1f9c86"/>
+  <rect x="380" y="320" width="52" height="52" rx="8" fill="#14695b"/>
+
+  <!-- row 6 -->
+  <rect x="140" y="380" width="52" height="52" rx="8" fill="#14695b"/>
+  <rect x="200" y="380" width="52" height="52" rx="8" fill="#1f9c86"/>
+  <rect x="260" y="380" width="52" height="52" rx="8" fill="#14695b"/>
+  <rect x="320" y="380" width="52" height="52" rx="8" fill="#14695b"/>
+</svg>

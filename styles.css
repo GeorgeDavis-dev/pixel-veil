@@ -1,0 +1,1597 @@
+/* Pixel Veil — styles
+   Dark UI with a teal accent that matches the app icon.
+   No external resources and no url() references: the page runs under a strict CSP
+   and is also inlined into a single file. */
+
+:root {
+  color-scheme: dark;
+
+  --bg: #101216;
+  --stage: #0b0d10;
+  --panel: #161a20;
+  --panel-2: #1e232b;
+  --panel-3: #272d37;
+  --line: #2a303a;
+  --line-strong: #3a4250;
+
+  --text: #eef1f5;
+  --muted: #9aa3b2;
+
+  --accent: #37d9b8;
+  --accent-bright: #6beacf;
+  --accent-deep: #1f9c86;
+  --accent-ink: #04201a;
+  --accent-soft: rgba(55, 217, 184, 0.13);
+  --accent-ring: rgba(55, 217, 184, 0.45);
+
+  --radius: 12px;
+  --radius-sm: 10px;
+  --shadow: 0 18px 50px rgba(0, 0, 0, 0.55);
+
+  --font: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+  --mono: ui-monospace, "SF Mono", "Cascadia Mono", Consolas, "Liberation Mono", monospace;
+
+  --stage-pad: 16px;
+}
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+[hidden] {
+  display: none !important;
+}
+
+html,
+body {
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+  overscroll-behavior: none;
+}
+
+body {
+  background: var(--bg);
+  color: var(--text);
+  font-family: var(--font);
+  font-size: 15px;
+  line-height: 1.45;
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+  -webkit-tap-highlight-color: transparent;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-touch-callout: none;
+}
+
+button,
+input {
+  font: inherit;
+  color: inherit;
+}
+
+button {
+  margin: 0;
+  cursor: pointer;
+  touch-action: manipulation;
+}
+
+button:disabled {
+  cursor: default;
+}
+
+:focus {
+  outline: none;
+}
+
+:focus-visible {
+  outline: 2px solid var(--accent-bright);
+  outline-offset: 2px;
+}
+
+/* ------------------------------------------------------------------ layout */
+
+.app {
+  display: grid;
+  /* top bar, stage, filmstrip (when shown), context row, toolbar, hint */
+  grid-template-rows: auto minmax(0, 1fr) auto auto auto auto;
+  grid-template-columns: minmax(0, 1fr);
+  height: 100vh;
+  height: 100dvh;
+  overflow: hidden;
+}
+
+/* ------------------------------------------------------------------ icons */
+
+.ico {
+  width: 22px;
+  height: 22px;
+  flex: none;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.8;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+
+.ico .solid {
+  fill: currentColor;
+  stroke: none;
+}
+
+/* ------------------------------------------------------------------ top bar */
+
+.topbar {
+  position: relative;
+  z-index: 20;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  padding: calc(6px + env(safe-area-inset-top, 0px)) calc(10px + env(safe-area-inset-right, 0px)) 6px
+    calc(12px + env(safe-area-inset-left, 0px));
+  background: var(--panel);
+  border-bottom: 1px solid var(--line);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.brand-mark {
+  width: 30px;
+  height: 30px;
+  flex: none;
+}
+
+.bm-tile {
+  fill: #0c0e12;
+  stroke: var(--line-strong);
+}
+
+.bm-a { fill: #14695b; }
+.bm-b { fill: #1f9c86; }
+.bm-c { fill: #37d9b8; }
+.bm-d { fill: #6beacf; }
+.bm-e { fill: #a4f7e4; }
+
+.brand-name {
+  font-size: 17px;
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  white-space: nowrap;
+}
+
+.topbar-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex: none;
+}
+
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  min-width: 44px;
+  min-height: 44px;
+  padding: 0 12px;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--text);
+  font-weight: 600;
+  white-space: nowrap;
+  transition: background-color 0.12s ease, border-color 0.12s ease, opacity 0.12s ease;
+}
+
+.btn:hover:not(:disabled) {
+  background: var(--panel-3);
+}
+
+.btn:active:not(:disabled) {
+  background: var(--line-strong);
+}
+
+.btn:disabled {
+  opacity: 0.38;
+}
+
+.btn-primary {
+  background: var(--accent);
+  color: var(--accent-ink);
+}
+
+.btn-primary:hover:not(:disabled) {
+  background: var(--accent-bright);
+}
+
+.btn-primary:active:not(:disabled) {
+  background: var(--accent-deep);
+}
+
+.btn-primary:focus-visible {
+  outline-color: #fff;
+}
+
+.btn-quiet {
+  border-color: var(--line-strong);
+}
+
+/* Save menu */
+
+.menu-anchor {
+  position: relative;
+}
+
+.menu {
+  position: absolute;
+  top: calc(100% + 8px);
+  right: 0;
+  z-index: 30;
+  width: 248px;
+  max-width: calc(100vw - 24px);
+  max-height: calc(100vh - 72px - env(safe-area-inset-top, 0px));
+  max-height: calc(100dvh - 72px - env(safe-area-inset-top, 0px));
+  overflow-y: auto;
+  padding: 6px;
+  border: 1px solid var(--line-strong);
+  border-radius: 14px;
+  background: var(--panel-2);
+  box-shadow: var(--shadow);
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 56px;
+  padding: 8px 12px 8px 8px;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  text-align: left;
+}
+
+.menu-item:hover,
+.menu-item:focus-visible {
+  background: var(--panel-3);
+}
+
+.menu-check {
+  color: var(--accent);
+  visibility: hidden;
+}
+
+.menu-item[aria-checked="true"] .menu-check {
+  visibility: visible;
+}
+
+.menu-text {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.menu-title {
+  font-weight: 700;
+}
+
+.menu-note {
+  color: var(--muted);
+  font-size: 13px;
+}
+
+/* With several photos open the menu also has "what to save" buttons. */
+
+.menu.is-batch {
+  width: 276px;
+}
+
+.menu-scopes {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  margin-top: 6px;
+  padding: 8px 2px 2px;
+  border-top: 1px solid var(--line);
+}
+
+.menu-scope {
+  width: 100%;
+}
+
+/* ------------------------------------------------------------------ stage */
+
+.stage {
+  position: relative;
+  min-height: 0;
+  overflow: hidden;
+  background-color: var(--stage);
+  /* A faint dot grid behind the photo. */
+  background-image: radial-gradient(circle at 1px 1px, rgba(255, 255, 255, 0.055) 1px, transparent 1.5px);
+  background-size: 22px 22px;
+}
+
+.stage.is-empty {
+  background-image: none;
+}
+
+.stage-fit {
+  position: absolute;
+  top: var(--stage-pad);
+  right: calc(var(--stage-pad) + env(safe-area-inset-right, 0px));
+  bottom: var(--stage-pad);
+  left: calc(var(--stage-pad) + env(safe-area-inset-left, 0px));
+  display: grid;
+  place-items: center;
+}
+
+.canvas-wrap {
+  position: relative;
+  width: 2px;
+  height: 2px;
+  box-shadow: 0 0 0 1px rgba(255, 255, 255, 0.07), 0 14px 44px rgba(0, 0, 0, 0.6);
+  /* Checkerboard behind transparent images. */
+  background-color: #cfd3da;
+  background-image: conic-gradient(#f3f4f6 25%, transparent 0 50%, #f3f4f6 0 75%, transparent 0);
+  background-size: 16px 16px;
+}
+
+.canvas-wrap canvas {
+  position: absolute;
+  top: 0;
+  left: 0;
+  display: block;
+  width: 100%;
+  height: 100%;
+}
+
+#overlayCanvas {
+  touch-action: none;
+  cursor: crosshair;
+}
+
+/* Inside the edge, so the ring is not clipped when the photo fills the stage. */
+#overlayCanvas:focus-visible {
+  outline-offset: -2px;
+}
+
+/* Empty state: what the stage shows when no photo is loaded. The whole stage takes
+   a drop, and the dashed outline says so. */
+
+.empty {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  width: 100%;
+  height: 100%;
+  padding: 16px;
+  border: 1px dashed var(--line-strong);
+  border-radius: 14px;
+  text-align: center;
+}
+
+.empty-ico {
+  width: 34px;
+  height: 34px;
+  color: var(--muted);
+  stroke-width: 1.4;
+}
+
+.empty-title {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.empty .btn {
+  padding: 0 20px;
+}
+
+.empty-note {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+/* Face picker: one toggle button over each face that was found. While the layer
+   is up it covers the photo, so a drag cannot start underneath it. */
+
+.face-layer {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  cursor: default;
+}
+
+.face-layer:focus-visible {
+  outline-offset: -2px;
+}
+
+/* Placed by its centre (left / top are set from app.js) and drawn at the size of
+   the face, so that a crowded group photo stays readable on a small screen. The
+   box is a size container, which lets its badge shrink with it. */
+.face {
+  position: absolute;
+  padding: 0;
+  transform: translate(-50%, -50%);
+  border: 1.5px dashed rgba(255, 255, 255, 0.9);
+  border-radius: 6px;
+  background: transparent;
+  box-shadow: 0 0 0 1px rgba(6, 12, 14, 0.55);
+  container-type: size;
+}
+
+/* The touch target is never under 32 px: a smaller box gets an unseen margin,
+   evenly on all sides. Where the targets of neighbours overlap, app.js gives the
+   tap to the nearest face. */
+.face::after {
+  content: "";
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: max(100%, 32px);
+  height: max(100%, 32px);
+  transform: translate(-50%, -50%);
+}
+
+.face[aria-pressed="true"] {
+  border: 2.5px solid var(--accent);
+  background: rgba(55, 217, 184, 0.3);
+}
+
+.face:hover {
+  border-color: #fff;
+}
+
+.face:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 2px;
+}
+
+.face-badge {
+  position: absolute;
+  top: -7px;
+  right: -7px;
+  display: none;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--accent);
+  color: var(--accent-ink);
+  box-shadow: 0 0 0 1.5px rgba(6, 12, 14, 0.7);
+}
+
+.face[aria-pressed="true"] .face-badge {
+  display: grid;
+}
+
+.face-badge .ico {
+  width: 12px;
+  height: 12px;
+  stroke-width: 2.4;
+}
+
+/* On a small face the full-size badge would cover the neighbour. */
+@container (max-width: 30px) {
+  .face-badge {
+    top: -5px;
+    right: -5px;
+    width: 12px;
+    height: 12px;
+    box-shadow: 0 0 0 1px rgba(6, 12, 14, 0.7);
+  }
+
+  .face-badge .ico {
+    width: 8px;
+    height: 8px;
+    stroke-width: 3;
+  }
+}
+
+/* Toasts sit at the bottom of the stage, clear of the toolbar. */
+
+.toasts {
+  position: absolute;
+  right: 12px;
+  bottom: 14px;
+  left: 12px;
+  z-index: 8;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  pointer-events: none;
+}
+
+.toast {
+  max-width: min(440px, 100%);
+  padding: 10px 16px;
+  border: 1px solid var(--line-strong);
+  border-radius: 999px;
+  background: rgba(30, 35, 43, 0.97);
+  box-shadow: 0 8px 28px rgba(0, 0, 0, 0.5);
+  color: var(--text);
+  font-size: 14px;
+  font-weight: 500;
+  text-align: center;
+  animation: toast-in 0.22s ease both;
+  transition: opacity 0.25s ease, transform 0.25s ease;
+}
+
+.toast.leaving {
+  opacity: 0;
+  transform: translateY(6px);
+}
+
+/* ------------------------------------------------------------------ filmstrip */
+
+.strip {
+  --thumb-h: 64px;
+  min-width: 0;
+  background: var(--panel);
+  border-top: 1px solid var(--line);
+}
+
+.strip-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px;
+  min-height: 44px;
+  padding: 0 calc(8px + env(safe-area-inset-right, 0px)) 0 calc(14px + env(safe-area-inset-left, 0px));
+}
+
+.strip-count {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--muted);
+  font-size: 13px;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Several photos selected: edits will land on all of them, so say it in colour. */
+.strip.is-multi .strip-count {
+  color: var(--accent-bright);
+}
+
+.strip-actions {
+  display: flex;
+  flex: none;
+  gap: 2px;
+}
+
+.strip-btn {
+  padding: 0 10px;
+  border-color: transparent;
+  color: var(--muted);
+  font-size: 13px;
+}
+
+.strip-btn:hover:not(:disabled) {
+  color: var(--text);
+}
+
+.strip-btn[aria-pressed="true"] {
+  border-color: var(--accent-ring);
+  background: var(--accent-soft);
+  color: var(--accent-bright);
+}
+
+.strip-icon .ico {
+  width: 20px;
+  height: 20px;
+}
+
+.strip-list {
+  display: flex;
+  gap: 6px;
+  padding: 3px calc(12px + env(safe-area-inset-right, 0px)) 8px calc(12px + env(safe-area-inset-left, 0px));
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-x: contain;
+  scrollbar-color: var(--line-strong) transparent;
+  scrollbar-width: thin;
+  touch-action: pan-x;
+}
+
+.thumb {
+  position: relative;
+  flex: none;
+  height: var(--thumb-h);
+  max-width: calc(var(--thumb-h) * 2.4);
+  padding: 2px;
+  border: 2px solid transparent;
+  border-radius: 9px;
+  background: transparent;
+  cursor: pointer;
+}
+
+.thumb-img,
+.thumb-wait {
+  display: block;
+  height: 100%;
+  border-radius: 5px;
+}
+
+.thumb-img {
+  width: auto;
+  max-width: 100%;
+  object-fit: cover;
+  background: var(--panel-3);
+}
+
+/* Placeholder until the thumbnail has been made. */
+.thumb-wait {
+  aspect-ratio: 4 / 3;
+  background: var(--panel-3);
+  animation: pulse 1.6s ease-in-out infinite;
+}
+
+.thumb:hover {
+  border-color: var(--line-strong);
+}
+
+.thumb[aria-selected="true"] {
+  border-color: var(--accent-deep);
+  background: var(--accent-soft);
+}
+
+.thumb.is-active {
+  border-color: var(--accent-bright);
+  box-shadow: 0 0 0 1px var(--accent-bright);
+}
+
+/* While several are selected, the ones left out step back. */
+.strip.is-multi .thumb:not([aria-selected="true"]) .thumb-img {
+  opacity: 0.5;
+}
+
+.thumb:focus-visible {
+  outline: 2px solid #fff;
+  outline-offset: 1px;
+}
+
+.thumb-dot {
+  position: absolute;
+  top: 7px;
+  right: 7px;
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 2px rgba(11, 13, 16, 0.85);
+}
+
+.thumb-tick {
+  position: absolute;
+  right: 6px;
+  bottom: 6px;
+  display: grid;
+  place-items: center;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: rgba(11, 13, 16, 0.85);
+  color: var(--accent-bright);
+}
+
+.thumb-tick .ico {
+  width: 12px;
+  height: 12px;
+  stroke-width: 3;
+}
+
+/* A mouse does not need 44 px targets in the strip header. */
+@media (pointer: fine) {
+  .strip-head {
+    min-height: 40px;
+  }
+
+  .strip-btn {
+    min-width: 36px;
+    min-height: 34px;
+  }
+}
+
+/* ------------------------------------------------------------------ context row */
+
+.context {
+  background: var(--panel);
+  border-top: 1px solid var(--line);
+}
+
+.cropbar,
+.strength {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  max-width: 640px;
+  min-height: 52px;
+  margin: 0 auto;
+  padding: 4px calc(14px + env(safe-area-inset-right, 0px)) 4px calc(14px + env(safe-area-inset-left, 0px));
+}
+
+.cropbar {
+  justify-content: space-between;
+}
+
+.crop-size {
+  min-width: 0;
+  overflow: hidden;
+  color: var(--text);
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.cropbar-actions {
+  display: flex;
+  flex: none;
+  gap: 8px;
+}
+
+/* Face picker bar. It wraps: the count and All / None first, then the rest. */
+
+.facebar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px 10px;
+  max-width: 900px;
+  min-height: 52px;
+  margin: 0 auto;
+  padding: 4px calc(14px + env(safe-area-inset-right, 0px)) 4px calc(14px + env(safe-area-inset-left, 0px));
+}
+
+.face-status {
+  display: flex;
+  flex: 1 1 150px;
+  flex-direction: column;
+  min-width: 0;
+  line-height: 1.25;
+}
+
+.face-count {
+  overflow: hidden;
+  font-variant-numeric: tabular-nums;
+  font-weight: 600;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.face-meta {
+  overflow: hidden;
+  color: var(--muted);
+  font-size: 12.5px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.facebar-group {
+  display: flex;
+  flex: none;
+  gap: 6px;
+}
+
+.facebar-nav {
+  margin-left: auto;
+}
+
+.strength-label {
+  color: var(--muted);
+  font-size: 13.5px;
+  font-weight: 600;
+}
+
+.strength-value {
+  min-width: 2.2em;
+  padding: 2px 0;
+  border-radius: 8px;
+  background: var(--accent-soft);
+  color: var(--accent-bright);
+  font-variant-numeric: tabular-nums;
+  font-weight: 700;
+  text-align: center;
+}
+
+.strength-range {
+  flex: 1 1 auto;
+  min-width: 0;
+  height: 44px;
+  margin: 0;
+  background: transparent;
+  cursor: pointer;
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.strength-range::-webkit-slider-runnable-track {
+  height: 6px;
+  border-radius: 3px;
+  background: var(--line-strong);
+}
+
+.strength-range::-moz-range-track {
+  height: 6px;
+  border-radius: 3px;
+  background: var(--line-strong);
+}
+
+.strength-range::-moz-range-progress {
+  height: 6px;
+  border-radius: 3px;
+  background: var(--accent-deep);
+}
+
+.strength-range::-webkit-slider-thumb {
+  width: 26px;
+  height: 26px;
+  margin-top: -10px;
+  border: 3px solid var(--panel);
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent-deep);
+  -webkit-appearance: none;
+  appearance: none;
+}
+
+.strength-range::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border: 3px solid var(--panel);
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 0 1px var(--accent-deep);
+}
+
+.strength-range:focus-visible {
+  outline-offset: -6px;
+  border-radius: 12px;
+}
+
+.strength-range:disabled {
+  opacity: 0.38;
+  cursor: default;
+}
+
+/* ------------------------------------------------------------------ toolbar */
+
+.toolbar {
+  display: flex;
+  align-items: stretch;
+  justify-content: center;
+  gap: 4px;
+  padding: 6px calc(8px + env(safe-area-inset-right, 0px)) 2px calc(8px + env(safe-area-inset-left, 0px));
+  background: var(--panel);
+  border-top: 1px solid var(--line);
+}
+
+.context + .toolbar {
+  border-top-color: transparent;
+}
+
+.tool {
+  display: flex;
+  flex: 1 1 0;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  min-width: 44px;
+  max-width: 92px;
+  min-height: 54px;
+  padding: 4px 0;
+  border: 1px solid transparent;
+  border-radius: var(--radius-sm);
+  background: transparent;
+  color: var(--muted);
+  font-size: 11.5px;
+  font-weight: 600;
+  line-height: 1.1;
+  transition: background-color 0.12s ease, color 0.12s ease, border-color 0.12s ease;
+}
+
+.tool:hover:not(:disabled) {
+  background: var(--panel-2);
+  color: var(--text);
+}
+
+.tool:active:not(:disabled) {
+  background: var(--panel-3);
+}
+
+/* No photo loaded: the tools are there but dimmed. */
+.tool:disabled {
+  opacity: 0.38;
+}
+
+.tool[aria-pressed="true"] {
+  border-color: var(--accent-ring);
+  background: var(--accent-soft);
+  color: var(--accent-bright);
+}
+
+.tool-label {
+  white-space: nowrap;
+}
+
+.tool-sep {
+  flex: none;
+  align-self: center;
+  width: 1px;
+  height: 30px;
+  margin: 0 4px;
+  background: var(--line-strong);
+}
+
+.hint {
+  min-height: calc(1.45em + 8px + env(safe-area-inset-bottom, 0px));
+  margin: 0;
+  padding: 2px calc(12px + env(safe-area-inset-right, 0px)) calc(6px + env(safe-area-inset-bottom, 0px))
+    calc(12px + env(safe-area-inset-left, 0px));
+  overflow: hidden;
+  background: var(--panel);
+  color: var(--muted);
+  font-size: 12.5px;
+  text-align: center;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* Edits are going onto several photos at once. */
+.hint.is-sync {
+  color: var(--accent-bright);
+  font-weight: 600;
+}
+
+/* ------------------------------------------------------------------ drop highlight */
+
+.drop-veil {
+  position: fixed;
+  inset: 0;
+  z-index: 60;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  background: rgba(8, 10, 13, 0.72);
+  pointer-events: none;
+}
+
+.drop-veil::before {
+  content: "";
+  position: absolute;
+  inset: 12px;
+  border: 3px dashed var(--accent);
+  border-radius: 22px;
+}
+
+.drop-card {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 16px 22px;
+  border-radius: 16px;
+  background: var(--panel-2);
+  color: var(--accent-bright);
+  font-size: 17px;
+  font-weight: 700;
+}
+
+.drop-card .ico {
+  width: 26px;
+  height: 26px;
+}
+
+/* ------------------------------------------------------------------ busy overlay */
+
+.busy {
+  position: fixed;
+  inset: 0;
+  z-index: 70;
+  display: grid;
+  place-items: center;
+  padding: 16px;
+  background: rgba(8, 10, 13, 0.62);
+  cursor: progress;
+  touch-action: none;
+}
+
+.busy-card {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 10px 14px;
+  max-width: 100%;
+  padding: 16px 22px;
+  border: 1px solid var(--line-strong);
+  border-radius: 16px;
+  background: var(--panel-2);
+  box-shadow: var(--shadow);
+  font-weight: 600;
+}
+
+.spinner {
+  width: 26px;
+  height: 26px;
+  flex: none;
+  border: 3px solid var(--line-strong);
+  border-top-color: var(--accent);
+  border-radius: 50%;
+  animation: spin 0.8s linear infinite;
+}
+
+.busy-text {
+  min-width: 0;
+  overflow-wrap: anywhere;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ------------------------------------------------------------------ small dialogs */
+
+.sheet {
+  width: min(420px, calc(100vw - 28px));
+  max-width: none;
+  padding: 20px 20px 16px;
+  border: 1px solid var(--line-strong);
+  border-radius: 16px;
+  background: var(--panel);
+  box-shadow: var(--shadow);
+  color: var(--text);
+}
+
+.sheet::backdrop {
+  background: rgba(6, 8, 11, 0.7);
+}
+
+.sheet-title {
+  margin: 0 0 6px;
+  font-size: 18px;
+}
+
+.sheet-text {
+  margin: 0 0 18px;
+  color: #d5dae3;
+  overflow-wrap: anywhere;
+}
+
+.sheet-actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: flex-end;
+  gap: 8px;
+}
+
+/* ------------------------------------------------------------------ help dialog */
+
+.help {
+  /* Keep clear of the status bar and home indicator in the installed iOS app. The
+     browser's own "margin: auto" still centres the dialog in what is left. */
+  top: env(safe-area-inset-top, 0px);
+  bottom: env(safe-area-inset-bottom, 0px);
+  width: min(620px, calc(100vw - 20px));
+  max-width: none;
+  max-height: calc(100vh - 28px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
+  max-height: calc(100dvh - 28px - env(safe-area-inset-top, 0px) - env(safe-area-inset-bottom, 0px));
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid var(--line-strong);
+  border-radius: 18px;
+  background: var(--panel);
+  box-shadow: var(--shadow);
+  color: var(--text);
+}
+
+.help[open] {
+  display: flex;
+  flex-direction: column;
+}
+
+.help::backdrop {
+  background: rgba(6, 8, 11, 0.7);
+}
+
+.help-head {
+  display: flex;
+  flex: none;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding: 8px 8px 8px 22px;
+  border-bottom: 1px solid var(--line);
+}
+
+.help-title {
+  margin: 0;
+  font-size: 18px;
+}
+
+.help-body {
+  flex: 1 1 auto;
+  min-height: 0;
+  padding: 6px 22px 22px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  -webkit-user-select: text;
+  user-select: text;
+}
+
+.help-body:focus-visible {
+  outline-offset: -3px;
+}
+
+.help-body h3 {
+  margin: 22px 0 6px;
+  color: var(--accent-bright);
+  font-size: 13px;
+  letter-spacing: 0.07em;
+  text-transform: uppercase;
+}
+
+.help-body p {
+  margin: 8px 0;
+  color: #d5dae3;
+}
+
+.help-lead {
+  font-size: 16px;
+}
+
+.help-body ol {
+  margin: 8px 0;
+  padding-left: 22px;
+  color: #d5dae3;
+}
+
+.help-body li {
+  margin: 4px 0;
+}
+
+.help-body li::marker {
+  color: var(--accent);
+  font-weight: 700;
+}
+
+.help-tools {
+  display: grid;
+  grid-template-columns: max-content minmax(0, 1fr);
+  gap: 8px 16px;
+  margin: 8px 0;
+}
+
+.help-tools dt {
+  font-weight: 700;
+}
+
+.help-tools dd {
+  margin: 0;
+  color: #d5dae3;
+}
+
+.help-status {
+  display: inline-block;
+  padding: 6px 12px;
+  border: 1px solid var(--accent-ring);
+  border-radius: 999px;
+  background: var(--accent-soft);
+  color: var(--accent-bright) !important;
+  font-size: 13.5px;
+  font-weight: 600;
+}
+
+.mono {
+  font-family: var(--mono);
+  font-size: 0.92em;
+}
+
+.keys {
+  width: 100%;
+  margin: 8px 0;
+  border-collapse: collapse;
+}
+
+.keys th,
+.keys td {
+  padding: 7px 0;
+  border-bottom: 1px solid var(--line);
+  text-align: left;
+  vertical-align: middle;
+}
+
+.keys th {
+  width: 46%;
+  padding-right: 12px;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+.keys td {
+  color: #d5dae3;
+}
+
+kbd {
+  display: inline-block;
+  min-width: 1.9em;
+  padding: 2px 6px;
+  border: 1px solid var(--line-strong);
+  border-bottom-width: 2px;
+  border-radius: 6px;
+  background: var(--panel-3);
+  font-family: var(--mono);
+  font-size: 12.5px;
+  text-align: center;
+}
+
+.help-credit {
+  margin-top: 20px !important;
+  color: var(--muted) !important;
+  font-size: 13px;
+}
+
+/* ------------------------------------------------------------------ animation */
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes toast-in {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+@keyframes pulse {
+  50% {
+    opacity: 0.35;
+  }
+}
+
+/* ------------------------------------------------------------------ small screens */
+
+@media (max-width: 520px) {
+  :root {
+    --stage-pad: 10px;
+  }
+
+  /* Icon-only buttons in the top bar. Save keeps its label for as long as it fits. */
+  .topbar-actions .btn-label {
+    display: none;
+  }
+
+  .topbar-actions .btn-primary .btn-label {
+    display: inline;
+  }
+
+  .topbar-actions .btn {
+    padding: 0 10px;
+  }
+
+  .help-tools {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 2px;
+  }
+
+  .help-tools dd {
+    margin-bottom: 8px;
+  }
+
+  /* The longer shortcut descriptions ("Tab to the thumbnails, then ...") do not fit
+     on one line beside their meaning here, and would push the table past the edge. */
+  .keys th {
+    white-space: normal;
+  }
+}
+
+/* Phone widths: the longest label ("Pixelate") needs a little air inside its button. */
+@media (max-width: 430px) {
+  .toolbar {
+    gap: 2px;
+  }
+
+  .tool {
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 380px) {
+  .topbar {
+    gap: 4px;
+    padding-left: calc(8px + env(safe-area-inset-left, 0px));
+    padding-right: calc(6px + env(safe-area-inset-right, 0px));
+  }
+
+  .brand {
+    gap: 7px;
+  }
+
+  .brand-name {
+    font-size: 15.5px;
+  }
+
+  .topbar-actions {
+    gap: 2px;
+  }
+
+  /* Seven 44 px targets and the divider only just fit in 320 px. */
+  .toolbar {
+    gap: 0;
+    padding-left: calc(2px + env(safe-area-inset-left, 0px));
+    padding-right: calc(2px + env(safe-area-inset-right, 0px));
+  }
+
+  .tool {
+    font-size: 10.5px;
+  }
+
+  .tool-sep {
+    margin: 0 3px;
+  }
+
+  .hint {
+    font-size: 12px;
+  }
+
+  /* Four face-review buttons side by side need every pixel at 320. */
+  .facebar {
+    padding-left: calc(8px + env(safe-area-inset-left, 0px));
+    padding-right: calc(8px + env(safe-area-inset-right, 0px));
+  }
+
+  .facebar .btn {
+    padding: 0 9px;
+    font-size: 14px;
+  }
+
+  .facebar-group {
+    gap: 4px;
+  }
+
+  /* "30 of 30 faces will be hidden" does not fit beside All and None here. Let it
+     wrap: the count is the one thing in the bar that must stay readable. */
+  .face-count {
+    white-space: normal;
+  }
+
+  /* The same for "3 of 12 selected" beside the filmstrip's four buttons: two short
+     lines instead of a cut-off one. */
+  .strip-count {
+    line-height: 1.2;
+    white-space: normal;
+  }
+
+  .strip-btn {
+    padding: 0 8px;
+  }
+
+  /* The Save button is not at the screen edge here, so the wider menu would hang
+     off the left side. */
+  .menu.is-batch {
+    width: 248px;
+  }
+}
+
+@media (max-width: 345px) {
+  .topbar-actions .btn-primary .btn-label {
+    display: none;
+  }
+}
+
+.brand-name {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+/* Short screens (a phone on its side): tighten the vertical rhythm. */
+@media (max-height: 430px) {
+  :root {
+    --stage-pad: 6px;
+  }
+
+  .tool {
+    min-height: 46px;
+  }
+
+  .cropbar,
+  .strength {
+    min-height: 46px;
+  }
+
+  /* The photo needs the height more than the hint does. */
+  .hint {
+    display: none;
+  }
+
+  .toolbar {
+    padding-bottom: calc(4px + env(safe-area-inset-bottom, 0px));
+  }
+
+  .empty {
+    gap: 8px;
+    padding: 8px;
+  }
+
+  .empty-ico {
+    display: none;
+  }
+
+  /* Filmstrip on one line: its buttons on the left, the thumbnails beside them. */
+  .strip {
+    --thumb-h: 48px;
+    display: flex;
+    align-items: center;
+  }
+
+  .strip-head {
+    flex: none;
+    padding-right: 0;
+  }
+
+  .strip-count {
+    display: none;
+  }
+
+  /* Several selected: the count is the only text cue left once the hint is hidden. */
+  .strip.is-multi .strip-count {
+    display: block;
+  }
+
+  .strip-list {
+    flex: 1 1 auto;
+    min-width: 0;
+    padding-top: 4px;
+    padding-bottom: 4px;
+  }
+}
+
+/* Choosing faces needs the room more than the thumbnails do on a small screen.
+   Changing photo would end the choice anyway. */
+@media (max-height: 700px) {
+  .app.is-picking .strip {
+    display: none;
+  }
+}
+
+/* A phone on its side has width to spare: put each label beside its icon. */
+@media (max-height: 430px) and (min-width: 560px) {
+  .tool {
+    flex-direction: row;
+    gap: 7px;
+    max-width: none;
+    min-height: 44px;
+    font-size: 13px;
+  }
+}
+
+/* Room to spare: larger tool buttons with the label beside the icon. */
+@media (min-width: 760px) {
+  .toolbar {
+    gap: 6px;
+    padding-top: 8px;
+  }
+
+  .tool {
+    flex: 0 1 auto;
+    flex-direction: row;
+    gap: 8px;
+    max-width: none;
+    min-height: 46px;
+    padding: 0 14px;
+    font-size: 14px;
+  }
+
+  .tool-sep {
+    margin: 0 8px;
+  }
+
+  .hint {
+    font-size: 13px;
+  }
+}
+
+/* Thumbnails grow where there is height for them. */
+@media (min-width: 760px) and (min-height: 600px) {
+  .strip {
+    --thumb-h: 84px;
+  }
+}
+
+/* ------------------------------------------------------------------ forced colors */
+
+/* Windows contrast themes override the accent colours, so show the selected tool
+   with the system highlight pair instead. */
+@media (forced-colors: active) {
+  .tool[aria-pressed="true"] {
+    forced-color-adjust: none;
+    border-color: Highlight;
+    background: Highlight;
+    color: HighlightText;
+  }
+
+  .tool[aria-pressed="true"]:focus-visible {
+    outline-color: CanvasText;
+  }
+
+  /* The same for the filmstrip selection and the faces marked to be hidden. */
+  .thumb[aria-selected="true"] {
+    forced-color-adjust: none;
+    border-color: Highlight;
+    background: Canvas;
+  }
+
+  .thumb.is-active {
+    forced-color-adjust: none;
+    border-color: Highlight;
+    background: Highlight;
+    box-shadow: none;
+  }
+
+  .strip-btn[aria-pressed="true"] {
+    forced-color-adjust: none;
+    border-color: Highlight;
+    background: Highlight;
+    color: HighlightText;
+  }
+
+  .face {
+    forced-color-adjust: none;
+    border-color: CanvasText;
+    box-shadow: 0 0 0 1px Canvas;
+  }
+
+  .face[aria-pressed="true"] {
+    border-color: Highlight;
+    background: transparent;
+    box-shadow: 0 0 0 2px Canvas;
+  }
+
+  .face-badge {
+    background: Highlight;
+    color: HighlightText;
+  }
+
+  .hint.is-sync {
+    color: CanvasText;
+  }
+}
+
+/* ------------------------------------------------------------------ reduced motion */
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    transition: none !important;
+  }
+
+  .toast,
+  .thumb-wait {
+    animation: none;
+  }
+
+  /* A slow fade stands in for the spinning ring. */
+  .spinner {
+    border-color: var(--accent);
+    animation: pulse 1.6s ease-in-out infinite;
+  }
+}

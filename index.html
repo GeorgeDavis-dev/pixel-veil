@@ -1,0 +1,400 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Pixel Veil — hide faces and text in photos</title>
+<meta name="description" content="Pixelate, blur or black out faces, text and licence plates in one photo or many. Everything happens on your device, and it works offline.">
+<meta name="theme-color" content="#101216">
+<meta name="color-scheme" content="dark">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Pixel Veil">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="format-detection" content="telephone=no">
+<meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'wasm-unsafe-eval'; style-src 'self'; img-src 'self' blob: data:; connect-src 'self'; worker-src 'self'; manifest-src 'self'; base-uri 'none'; form-action 'none'; object-src 'none'">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="stylesheet" href="styles.css">
+<script src="zip.js" defer></script>
+<script src="face.js" defer></script>
+<script src="app.js" defer></script>
+</head>
+<body>
+
+<div class="app" id="app">
+
+  <!-- Top bar -->
+  <header class="topbar">
+    <div class="brand">
+      <svg class="brand-mark" viewBox="0 0 32 32" aria-hidden="true" focusable="false">
+        <rect class="bm-tile" x="0.5" y="0.5" width="31" height="31" rx="8"/>
+        <rect class="bm-b" x="10" y="5" width="5" height="5" rx="1"/>
+        <rect class="bm-c" x="17" y="5" width="5" height="5" rx="1"/>
+        <rect class="bm-e" x="5" y="12" width="5" height="5" rx="1"/>
+        <rect class="bm-d" x="10" y="12" width="5" height="5" rx="1"/>
+        <rect class="bm-e" x="17" y="12" width="5" height="5" rx="1"/>
+        <rect class="bm-d" x="22" y="12" width="5" height="5" rx="1"/>
+        <rect class="bm-b" x="5" y="19" width="5" height="5" rx="1"/>
+        <rect class="bm-c" x="10" y="19" width="5" height="5" rx="1"/>
+        <rect class="bm-b" x="17" y="19" width="5" height="5" rx="1"/>
+        <rect class="bm-a" x="22" y="19" width="5" height="5" rx="1"/>
+        <rect class="bm-a" x="10" y="26" width="5" height="2.5" rx="1"/>
+        <rect class="bm-b" x="17" y="26" width="5" height="2.5" rx="1"/>
+      </svg>
+      <span class="brand-name">Pixel Veil</span>
+    </div>
+
+    <div class="topbar-actions">
+      <button type="button" class="btn" id="undoBtn" title="Undo (Ctrl+Z)" aria-label="Undo" disabled>
+        <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <path d="M8.5 5 3.5 10l5 5"/>
+          <path d="M3.5 10H14a6 6 0 0 1 0 12h-3"/>
+        </svg>
+        <span class="btn-label">Undo</span>
+      </button>
+
+      <button type="button" class="btn" id="openBtn" title="Open photos (Ctrl+O)" aria-label="Open photos">
+        <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <rect x="3" y="4.5" width="18" height="15" rx="3"/>
+          <circle cx="8.6" cy="9.8" r="1.6"/>
+          <path d="m3.5 17 5-5 4 4 2.6-2.6 5.4 5.1"/>
+        </svg>
+        <span class="btn-label">Open</span>
+      </button>
+
+      <div class="menu-anchor">
+        <button type="button" class="btn btn-primary" id="saveBtn" title="Save (Ctrl+S)" aria-label="Save" aria-haspopup="menu" aria-expanded="false" aria-controls="saveMenu" disabled>
+          <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M12 3.5v11.5"/>
+            <path d="m7 10.5 5 5 5-5"/>
+            <path d="M4.5 20h15"/>
+          </svg>
+          <span class="btn-label">Save</span>
+        </button>
+        <div class="menu" id="saveMenu" role="menu" aria-label="Save as" hidden>
+          <button type="button" class="menu-item" role="menuitemradio" aria-checked="false" data-format="jpeg">
+            <svg class="ico menu-check" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>
+            <span class="menu-text">
+              <span class="menu-title">JPEG</span>
+              <span class="menu-note">Smaller file. Good for photos.</span>
+            </span>
+          </button>
+          <button type="button" class="menu-item" role="menuitemradio" aria-checked="false" data-format="png">
+            <svg class="ico menu-check" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>
+            <span class="menu-text">
+              <span class="menu-title">PNG</span>
+              <span class="menu-note">Lossless. Best for screenshots.</span>
+            </span>
+          </button>
+          <button type="button" class="menu-item" role="menuitemradio" aria-checked="false" data-format="same" hidden>
+            <svg class="ico menu-check" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>
+            <span class="menu-text">
+              <span class="menu-title">Same as each original</span>
+              <span class="menu-note">JPEG stays JPEG, PNG stays PNG.</span>
+            </span>
+          </button>
+          <div class="menu-scopes" id="saveScopes" role="group" aria-label="What to save" hidden>
+            <button type="button" class="btn btn-quiet menu-scope" role="menuitem" data-scope="this">Save this photo</button>
+            <button type="button" class="btn btn-quiet menu-scope" role="menuitem" data-scope="selected" hidden>Save selected</button>
+            <button type="button" class="btn btn-quiet menu-scope" role="menuitem" data-scope="all">Save all</button>
+          </div>
+        </div>
+      </div>
+
+      <button type="button" class="btn" id="helpBtn" title="Help (?)" aria-label="Help">
+        <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <circle cx="12" cy="12" r="9"/>
+          <path d="M9.4 9.4a2.7 2.7 0 1 1 4 2.4c-.9.5-1.4 1.1-1.4 2.1"/>
+          <circle class="solid" cx="12" cy="17" r="1"/>
+        </svg>
+        <span class="btn-label">Help</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Stage -->
+  <main class="stage" id="stage">
+    <div class="stage-fit" id="stageFit">
+      <div class="canvas-wrap" id="canvasWrap" hidden>
+        <canvas id="mainCanvas" width="2" height="2"></canvas>
+        <canvas id="overlayCanvas" width="2" height="2" tabindex="0" role="application" aria-label="Photo. Drag over an area to hide it, or use the arrow keys to place a box and press Enter."></canvas>
+        <div class="face-layer" id="faceLayer" role="group" aria-label="Faces found in this photo. Choose the ones to hide." tabindex="-1" hidden></div>
+      </div>
+
+      <section class="empty" id="emptyState" aria-labelledby="emptyTitle">
+        <svg class="ico empty-ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+          <rect x="3" y="4.5" width="18" height="15" rx="3"/>
+          <circle cx="8.6" cy="9.8" r="1.6"/>
+          <path d="m3.5 17 5-5 4 4 2.6-2.6 5.4 5.1"/>
+        </svg>
+        <h1 class="empty-title" id="emptyTitle">Drop photos here</h1>
+        <button type="button" class="btn btn-primary" id="emptyOpenBtn">Open photos</button>
+        <p class="empty-note">or paste from the clipboard · nothing leaves this device</p>
+      </section>
+    </div>
+
+    <div class="toasts" id="toasts" role="status" aria-live="polite"></div>
+  </main>
+
+  <!-- Filmstrip: shown when two or more photos are loaded -->
+  <section class="strip" id="strip" aria-label="Photos" hidden>
+    <div class="strip-head">
+      <span class="strip-count" id="stripCount"></span>
+      <span class="strip-actions">
+        <button type="button" class="btn btn-quiet strip-btn" id="stripSelectAllBtn" aria-pressed="false">Select all</button>
+        <button type="button" class="btn btn-quiet strip-btn" id="stripSelectBtn" aria-pressed="false" title="Tap photos to add them to the selection" hidden>Select</button>
+        <button type="button" class="btn btn-quiet strip-btn strip-icon" id="stripAddBtn" title="Add photos" aria-label="Add photos">
+          <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M12 5v14M5 12h14"/></svg>
+        </button>
+        <button type="button" class="btn btn-quiet strip-btn strip-icon" id="stripRemoveBtn" title="Remove the selected photos (Delete)" aria-label="Remove the selected photos">
+          <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+            <path d="M4.5 7h15"/>
+            <path d="M9.5 7V4.5h5V7"/>
+            <path d="M6.5 7l.9 12.5h9.2L17.5 7"/>
+            <path d="M10 11v5M14 11v5"/>
+          </svg>
+        </button>
+      </span>
+    </div>
+    <div class="strip-list" id="stripList" role="listbox" aria-multiselectable="true" aria-orientation="horizontal" aria-label="Photos. Arrow keys change photo. Shift and arrow keys select a run. Ctrl and arrow keys move without selecting, then Ctrl and Space adds or removes a photo."></div>
+  </section>
+
+  <!-- Context row: crop bar, face bar or strength slider -->
+  <div class="context">
+    <div class="cropbar" id="cropBar" hidden>
+      <span class="crop-size" id="cropSize">Drag on the photo</span>
+      <span class="cropbar-actions">
+        <button type="button" class="btn btn-quiet" id="cropCancelBtn">Cancel</button>
+        <button type="button" class="btn btn-primary" id="cropApplyBtn" disabled>
+          <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg>
+          <span>Apply</span>
+        </button>
+      </span>
+    </div>
+
+    <div class="facebar" id="faceBar" hidden>
+      <span class="face-status">
+        <span class="face-count" id="faceCount"></span>
+        <span class="face-meta" id="faceMeta"></span>
+      </span>
+      <span class="facebar-group">
+        <button type="button" class="btn btn-quiet" id="faceAllBtn" title="Hide every face (A)">All</button>
+        <button type="button" class="btn btn-quiet" id="faceNoneBtn" title="Keep every face visible (N)">None</button>
+      </span>
+      <button type="button" class="btn btn-quiet facebar-bulk" id="faceBulkBtn" hidden>Hide all faces in all</button>
+      <span class="facebar-group facebar-nav">
+        <button type="button" class="btn btn-quiet" id="faceBackBtn" hidden>Back</button>
+        <button type="button" class="btn btn-quiet" id="faceSkipBtn" hidden>Skip</button>
+        <button type="button" class="btn btn-quiet" id="faceCancelBtn">Cancel</button>
+        <button type="button" class="btn btn-primary" id="faceApplyBtn">Apply</button>
+      </span>
+    </div>
+
+    <div class="strength" id="strengthRow" hidden>
+      <label class="strength-label" for="strength">Strength</label>
+      <input class="strength-range" type="range" id="strength" min="2" max="25" step="1" value="10">
+      <output class="strength-value" id="strengthValue" for="strength">10</output>
+    </div>
+  </div>
+
+  <!-- Bottom toolbar -->
+  <div class="toolbar" id="toolbar" role="toolbar" aria-label="Tools">
+    <button type="button" class="tool" data-tool="auto" aria-pressed="true" title="Auto (1)">
+      <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M10 3.5 11.8 9l5.7 1.8-5.7 1.9L10 18.2l-1.8-5.5L2.5 10.8 8.2 9z"/>
+        <path d="m18.5 14.5.8 2.2 2.2.8-2.2.8-.8 2.2-.8-2.2-2.2-.8 2.2-.8z"/>
+      </svg>
+      <span class="tool-label">Auto</span>
+    </button>
+    <button type="button" class="tool" data-tool="pixelate" aria-pressed="false" title="Pixelate (2)">
+      <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <rect x="3.5" y="3.5" width="17" height="17" rx="2.5"/>
+        <rect class="solid" x="6" y="6" width="4" height="4"/>
+        <rect class="solid" x="14" y="6" width="4" height="4"/>
+        <rect class="solid" x="10" y="10" width="4" height="4"/>
+        <rect class="solid" x="6" y="14" width="4" height="4"/>
+        <rect class="solid" x="14" y="14" width="4" height="4"/>
+      </svg>
+      <span class="tool-label">Pixelate</span>
+    </button>
+    <button type="button" class="tool" data-tool="blur" aria-pressed="false" title="Blur (3)">
+      <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M12 3.2c3.4 4 6 7 6 10.4a6 6 0 0 1-12 0c0-3.4 2.6-6.4 6-10.4z"/>
+        <path d="M9.2 14.2a2.9 2.9 0 0 0 2.3 2.7"/>
+      </svg>
+      <span class="tool-label">Blur</span>
+    </button>
+    <button type="button" class="tool" data-tool="black" aria-pressed="false" title="Black (4)">
+      <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <rect class="solid" x="3" y="8" width="18" height="8" rx="1.5"/>
+        <path d="M6 4.5h8M6 19.5h12"/>
+      </svg>
+      <span class="tool-label">Black</span>
+    </button>
+
+    <span class="tool-sep" aria-hidden="true"></span>
+
+    <button type="button" class="tool" id="facesBtn" title="Find faces and choose which to hide (F)">
+      <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M3.5 8V6a2.5 2.5 0 0 1 2.5-2.5h2M16 3.5h2A2.5 2.5 0 0 1 20.5 6v2M20.5 16v2a2.5 2.5 0 0 1-2.5 2.5h-2M8 20.5H6A2.5 2.5 0 0 1 3.5 18v-2"/>
+        <path d="M9 10v1M15 10v1"/>
+        <path d="M9 14.5c.8.9 1.8 1.3 3 1.3s2.2-.4 3-1.3"/>
+      </svg>
+      <span class="tool-label">Faces</span>
+    </button>
+    <button type="button" class="tool" id="cropBtn" aria-pressed="false" title="Crop (C)">
+      <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M7 2.5V17h14.5"/>
+        <path d="M2.5 7H17v14.5"/>
+      </svg>
+      <span class="tool-label">Crop</span>
+    </button>
+    <button type="button" class="tool" id="revertBtn" title="Revert to the original photo">
+      <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+        <path d="M4.5 12a7.5 7.5 0 1 0 2.3-5.4"/>
+        <path d="M4 4v4.5h4.5"/>
+      </svg>
+      <span class="tool-label">Revert</span>
+    </button>
+  </div>
+
+  <p class="hint" id="hint"></p>
+</div>
+
+<input type="file" id="fileInput" accept="image/*" multiple hidden>
+
+<div class="drop-veil" id="dropVeil" hidden>
+  <div class="drop-card">
+    <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false">
+      <path d="M12 3.5v11.5"/>
+      <path d="m7 10.5 5 5 5-5"/>
+      <path d="M4.5 20h15"/>
+    </svg>
+    <span>Drop photos to add them</span>
+  </div>
+</div>
+
+<div class="busy" id="busy" role="status" aria-live="polite" hidden>
+  <div class="busy-card">
+    <span class="spinner" aria-hidden="true"></span>
+    <span class="busy-text" id="busyText">Working…</span>
+    <button type="button" class="btn btn-quiet" id="busyCancelBtn" hidden>Cancel</button>
+  </div>
+</div>
+
+<dialog class="sheet" id="confirmDialog" aria-labelledby="confirmText">
+  <p class="sheet-text" id="confirmText"></p>
+  <div class="sheet-actions">
+    <button type="button" class="btn btn-quiet" id="confirmCancelBtn">Cancel</button>
+    <button type="button" class="btn btn-primary" id="confirmOkBtn">Remove</button>
+  </div>
+</dialog>
+
+<dialog class="sheet" id="resultDialog" aria-labelledby="resultTitle">
+  <h2 class="sheet-title" id="resultTitle">Photos ready</h2>
+  <p class="sheet-text" id="resultText">Share them to save to Photos or Files, or download them as one ZIP file.</p>
+  <div class="sheet-actions">
+    <button type="button" class="btn btn-quiet" id="resultCloseBtn">Close</button>
+    <button type="button" class="btn btn-quiet" id="resultZipBtn">Download ZIP</button>
+    <button type="button" class="btn btn-primary" id="resultShareBtn">Share</button>
+  </div>
+</dialog>
+
+<dialog class="help" id="helpDialog" aria-labelledby="helpTitle">
+  <div class="help-head">
+    <h2 class="help-title" id="helpTitle">Pixel Veil help</h2>
+    <button type="button" class="btn" id="helpCloseBtn" aria-label="Close help">
+      <svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M6 6l12 12M18 6 6 18"/></svg>
+    </button>
+  </div>
+  <div class="help-body" id="helpBody" tabindex="0">
+    <p class="help-lead">Pixel Veil covers the parts of a photo you want to keep private, such as faces, names, addresses and licence plates. It runs in this browser and nowhere else.</p>
+
+    <h3>How to use it</h3>
+    <ol>
+      <li>Open one photo or many. You can also drop photos onto the page or paste from the clipboard.</li>
+      <li>Drag a box over anything you want hidden.</li>
+      <li>Press Save. You get new files and your original photos stay as they were. On an iPhone or iPad the share sheet opens. Choose Save Image to put the copy in Photos.</li>
+    </ol>
+
+    <h3>The tools</h3>
+    <dl class="help-tools">
+      <dt>Auto</dt>
+      <dd>Chooses for you. A long, thin box (a line of text, across or down) is blurred. Any other box is pixelated.</dd>
+      <dt>Pixelate</dt>
+      <dd>Turns the area into large blocks. Strength sets the block size.</dd>
+      <dt>Blur</dt>
+      <dd>Smooths the area until the detail is gone. Strength sets how soft it gets.</dd>
+      <dt>Black</dt>
+      <dd>Covers the area with solid black.</dd>
+      <dt>Reveal</dt>
+      <dd>Drag backwards, from the bottom right up to the top left, to bring the original back inside that box.</dd>
+      <dt>Faces</dt>
+      <dd>Finds the faces in the photo and marks every one to be hidden. Tap the faces you want to keep visible, then press Apply. It uses Blur or Black if that tool is selected, and pixelates otherwise.</dd>
+      <dt>Crop</dt>
+      <dd>Drag out the part to keep. Move the box or pull its edges, then press Apply. Save waits until you have pressed Apply or Cancel.</dd>
+      <dt>Revert</dt>
+      <dd>Goes back to the photo as you opened it. Undo steps back through your changes, and it can undo a Revert too.</dd>
+    </dl>
+
+    <h3>Check the faces yourself</h3>
+    <p>Face detection can miss people. Small faces, faces turned away and faces that are partly covered are the usual ones. Look over each photo before you save it, and drag a box over any face that was missed.</p>
+
+    <h3>Several photos at once</h3>
+    <p>Open more than one photo and a strip of thumbnails appears under the picture. Click a thumbnail to work on that photo. Hold <kbd>Ctrl</kbd> or <kbd>⌘</kbd> and click to add photos to the selection, or hold <kbd>Shift</kbd> and click to select a run. From the keyboard, hold <kbd>Shift</kbd> and press the arrow keys to select a run, or hold <kbd>Ctrl</kbd> (<kbd>⌘</kbd>) and use the arrow keys to move, then <kbd>Ctrl</kbd> (<kbd>⌘</kbd>) + <kbd>Space</kbd> to add or remove a photo. On a touch screen, press Select and then tap the photos, or press and hold a thumbnail.</p>
+    <p>While two or more photos are selected, every edit goes onto all of them at the same place in each photo. A drag, a crop and a Revert all work this way, and Undo takes the edit back off all of them. The line under the tools, or the count beside the photos on a small screen, says how many photos you are editing.</p>
+    <p>Faces is different, because each photo has different people in it. It walks through the selected photos one at a time so you can choose the faces in each. You can also hide every face in every selected photo in a single step.</p>
+    <p>A dot on a thumbnail means the photo has edits. A tick means it has been saved since its last edit.</p>
+
+    <h3>Saving</h3>
+    <p>Save offers JPEG (a smaller file) or PNG (lossless, best for screenshots). The file is named after your photo with <span class="mono">_anonymized</span> added. Every photo is saved at its own full size.</p>
+    <p>With several photos open you can save this photo, the selected photos or all of them. Several photos are saved together as one ZIP file in your downloads. An iPhone or iPad offers the share sheet first, with the ZIP as the other choice.</p>
+    <p>Each saved file is built fresh from the pixels of the edited photo. Nothing else from the original comes along, so location, camera details, dates and other metadata (Exif and GPS) are left out. That is true for photos you did not edit as well.</p>
+
+    <h3>Privacy</h3>
+    <p>Your photos are never uploaded. All the work happens on this device. There are no accounts, no tracking and no analytics. The only network requests are for the app's own files, from the place it is hosted. The face detector is one of those files, and it is fetched the first time you use Faces unless the offline copy is already saved. The single-file version makes no requests at all.</p>
+    <p>Your tool, strength and format choices are kept in this browser so they are there next time. Photos are never stored.</p>
+    <p><button type="button" class="btn btn-quiet" id="resetChoicesBtn">Reset choices</button></p>
+
+    <h3>Using it offline</h3>
+    <p>After the first visit the app works with no connection. To install it, choose Install from the address bar or browser menu in Chrome or Edge. On an iPhone or iPad, use Share → Add to Home Screen. There is also a single-file version that opens straight from disk.</p>
+    <p class="help-status" id="offlineStatus">Checking offline status…</p>
+
+    <h3>A caution about text</h3>
+    <p>Blurred or pixelated <strong>text</strong> can sometimes be reconstructed, especially short strings such as numbers. Use Black for anything truly sensitive, such as passwords, account numbers and addresses.</p>
+
+    <h3>Keyboard shortcuts</h3>
+    <table class="keys">
+      <tbody>
+        <tr><th scope="row"><kbd>Ctrl</kbd> / <kbd>⌘</kbd> + <kbd>Z</kbd></th><td>Undo</td></tr>
+        <tr><th scope="row"><kbd>Ctrl</kbd> / <kbd>⌘</kbd> + <kbd>S</kbd></th><td>Save this photo, or the selected photos when there are several</td></tr>
+        <tr><th scope="row"><kbd>Ctrl</kbd> / <kbd>⌘</kbd> + <kbd>O</kbd></th><td>Open photos</td></tr>
+        <tr><th scope="row"><kbd>Ctrl</kbd> / <kbd>⌘</kbd> + <kbd>A</kbd></th><td>Select every photo</td></tr>
+        <tr><th scope="row"><kbd>1</kbd> <kbd>2</kbd> <kbd>3</kbd> <kbd>4</kbd></th><td>Auto, Pixelate, Blur, Black</td></tr>
+        <tr><th scope="row"><kbd>F</kbd></th><td>Find faces</td></tr>
+        <tr><th scope="row"><kbd>A</kbd> / <kbd>N</kbd></th><td>While choosing faces: hide all, hide none</td></tr>
+        <tr><th scope="row"><kbd>C</kbd></th><td>Crop</td></tr>
+        <tr><th scope="row"><kbd>Tab</kbd> to the photo, then arrow keys</th><td>Place and move a box</td></tr>
+        <tr><th scope="row"><kbd>Shift</kbd> + arrow keys</th><td>Resize the box</td></tr>
+        <tr><th scope="row"><kbd>Tab</kbd> to the thumbnails, then <kbd>←</kbd> <kbd>→</kbd></th><td>Previous or next photo</td></tr>
+        <tr><th scope="row"><kbd>Shift</kbd> + <kbd>←</kbd> <kbd>→</kbd> in the thumbnails</th><td>Select a run of photos</td></tr>
+        <tr><th scope="row"><kbd>Ctrl</kbd> / <kbd>⌘</kbd> + <kbd>←</kbd> <kbd>→</kbd>, then <kbd>Ctrl</kbd> / <kbd>⌘</kbd> + <kbd>Space</kbd></th><td>Move along the thumbnails, then add or remove a photo</td></tr>
+        <tr><th scope="row"><kbd>Delete</kbd> in the thumbnails</th><td>Remove the selected photos</td></tr>
+        <tr><th scope="row"><kbd>Enter</kbd></th><td>Hide what is in the box, apply the crop or apply the chosen faces</td></tr>
+        <tr><th scope="row"><kbd>Esc</kbd></th><td>Cancel a drag, box, crop or face choice, close a menu</td></tr>
+        <tr><th scope="row"><kbd>?</kbd></th><td>Open this help</td></tr>
+      </tbody>
+    </table>
+
+    <p class="help-credit">Face detection by Google MediaPipe (Apache-2.0). <span id="versionText">Pixel Veil</span></p>
+  </div>
+</dialog>
+
+<!-- Small icons that app.js clones into buttons it creates. -->
+<template id="tplCheck"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="m5 12.5 4.5 4.5L19 7.5"/></svg></template>
+<template id="tplEyeOff"><svg class="ico" viewBox="0 0 24 24" aria-hidden="true" focusable="false"><path d="M4 4l16 16"/><path d="M9.9 5.3A9.6 9.6 0 0 1 12 5c5 0 8.5 4.4 9.5 7a12.3 12.3 0 0 1-2.8 3.9"/><path d="M6.3 6.8C4.3 8.2 3 10.3 2.5 12c1 2.6 4.5 7 9.5 7 1.5 0 2.8-.4 4-1"/><path d="M9.9 9.9a3 3 0 0 0 4.2 4.2"/></svg></template>
+
+</body>
+</html>
