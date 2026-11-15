@@ -294,10 +294,11 @@
   function baseNameOf(name) {
     let s = String(name || '').replace(/^.*[\\/]/, '');
     s = s.replace(/\.[A-Za-z0-9]{1,5}$/, '');
-    // Chrome and Edge refuse a folder file name that holds a format or control
-    // character (zero-width joiner, LRM/RLM, soft hyphen...) or a non-character,
-    // or that starts with "~". The invisible ones go first, so that a "~", dot or
-    // space they were hiding at the start is then trimmed.
+    // A name that holds a format or control character (zero-width joiner, LRM/RLM,
+    // soft hyphen...) or a non-character, or that starts with "~", is refused or
+    // mangled by some systems when the file is saved or unpacked. The invisible
+    // ones go first, so that a "~", dot or space they were hiding at the start is
+    // then trimmed.
     s = s.replace(/[\p{Cf}\p{Noncharacter_Code_Point}]+/gu, '');
     s = s.replace(/[\p{Cc}<>:"/\\|?*]+/gu, '_').replace(/^[\s.~]+|[\s.]+$/g, '');
     if (s.length > 80) s = s.slice(0, 80);
@@ -784,12 +785,12 @@
     setDisabled(els.saveBtn, !has);
     setDisabled(els.undoBtn, !has || picking || active.ops.length === 0);
     // An Undo of a shared step comes off every photo that has it: say so up front.
-    let reach = 1;
+    let reach = 0; // other photos the Undo would change
     const last = has && active.ops.length ? active.ops[active.ops.length - 1] : null;
     if (last && last.group !== null) {
-      for (const p of photos) if (p !== active && canRemoveGroupOp(p, last.group)) reach++;
+      for (const p of photos) if (p !== active && undoChanges(p, last.group)) reach++;
     }
-    const undoLabel = reach > 1 ? 'Undo on ' + reach + ' photos' : 'Undo';
+    const undoLabel = reach ? 'Undo on ' + count(reach + (isMarker(last) ? 0 : 1), 'photo') : 'Undo';
     if (els.undoBtn.getAttribute('aria-label') !== undoLabel) {
       els.undoBtn.setAttribute('aria-label', undoLabel);
       els.undoBtn.title = undoLabel + ' (Ctrl+Z)';
@@ -1287,6 +1288,21 @@
   }
 
   /**
+   * True for an op that changes no pixels and is there only so that Undo can find a
+   * synced action from the active photo: a faces op with no rects, or a Revert of a
+   * photo that had nothing to revert.
+   */
+  function isMarker(op) {
+    if (op.type === 'faces') return op.rects.length === 0;
+    return op.type === 'revert' && effectiveOps({ ops: op.saved }).length === 0;
+  }
+
+  /** True if an Undo of `group` would change this photo. */
+  function undoChanges(photo, group) {
+    return canRemoveGroupOp(photo, group) && !isMarker(photo.ops[groupOpAt(photo, group)]);
+  }
+
+  /**
    * Take the op of `group` back off a photo that is not on screen. Returns true only
    * if the op was taken off. A Revert that the photo has been edited after is left
    * in place, and so is the photo.
@@ -1341,16 +1357,18 @@
     let outside = 0; // changed photos that are not in the current selection
     if (op.group !== null) {
       for (const p of photos) {
-        if (p !== active && removeGroupOp(p, op.group)) {
+        if (p === active) continue;
+        const changes = undoChanges(p, op.group);
+        if (removeGroupOp(p, op.group) && changes) {
           renderThumb(p);
           others++;
           if (!p.selected) outside++;
         }
       }
     }
-    // The step was shared. Say how far the undo reached, and keep the message up
-    // longer when it changed photos the user is not looking at.
-    if (others) toast('Undone on ' + (others + 1) + ' photos', outside ? 6000 : 0);
+    // The step was shared. Say how many photos the undo changed, and keep the message
+    // up longer when some of them are photos the user is not looking at.
+    if (others) toast('Undone on ' + count(others + (isMarker(op) ? 0 : 1), 'photo'), outside ? 6000 : 0);
 
     const finish = function () {
       renderThumb(active);
@@ -3656,7 +3674,7 @@
       } else {
         for (const d of kept) markSaved(d.photo, d.sig);
         if (job.cancelled) {
-          toast(kept.length ? 'Export stopped. ' + count(kept.length, 'photo') + ' saved ' + sink.label + '.' : 'Export cancelled.', 5000);
+          toast('Export cancelled.', 5000);
         } else if (kept.length) {
           toast('Saved ' + count(kept.length, 'photo') + ' ' + sink.label, 5000);
         }

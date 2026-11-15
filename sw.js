@@ -15,7 +15,7 @@
 
 // tools/build.mjs rewrites the next line with a hash of the precached files.
 // A new hash means a new cache name, which is how an update reaches people.
-const CACHE_VERSION = 'edf11a5586f8';
+const CACHE_VERSION = 'dd2dfb6a823a';
 
 const PRECACHE = [
   './',
